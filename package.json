@@ -1,0 +1,18 @@
+{
+  "name": "get-start-synpress",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "engines": {
+    "node": "16.0.0"
+  },
+  "scripts": {
+    "test:e2e": "synpress run --configFile tests/e2e/config.json"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@synthetixio/synpress": "^1.1.1",
+    "faker": "^5.5.3"
+  }
+}
