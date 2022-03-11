@@ -14,7 +14,7 @@ export default class CreateBounty extends Page {
   }
 
   getBranch() {
-    return cy.get(".css-14jk2my-container");
+    return cy.get(".css-yk16xz-control:nth-child(2)");
   }
 
   getAmount() {
