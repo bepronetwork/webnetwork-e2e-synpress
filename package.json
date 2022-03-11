@@ -11,8 +11,8 @@
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "@synthetixio/synpress": "^1.1.1",
-    "faker": "^5.5.3"
+  "devDependencies": {
+    "@faker-js/faker": "*",
+    "@synthetixio/synpress": "^1.1.1"
   }
 }
