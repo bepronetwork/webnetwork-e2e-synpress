@@ -49,10 +49,10 @@ PRIVATE_KEY=$(cat "./SYNPRESS_PRIVATEKEY")
 
 #export SECRET_WORDS='does,not,work,use,private,key' running synpress with seedphrase doesnt work as synpress sets up metamask with secret words once set. However, this leads to an error that crashes the test.
 export PRIVATE_KEY=$PRIVATE_KEY
-export NETWORK_NAME=ropsten
-export RPC_URL=https://ropsten.infura.io/v3/2296504ba19645bc922879ee8fb9d96a
-export CHAIN_ID=3
-export BLOCK_EXPLORER=https://ropsten.etherscan.io
+export NETWORK_NAME=Localhost
+export RPC_URL=http://127.0.0.1:8545
+export CHAIN_ID=1337
+export BLOCK_EXPLORER=http://127.0.0.1:8545
 export IS_TESTNET=true
 
 
