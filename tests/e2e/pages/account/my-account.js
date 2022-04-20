@@ -2,7 +2,7 @@ import Page from "../page";
 
 export default class MyAccount extends Page {
   getOracles() {
-    return cy.get(".h4:nth-child(3) > span", { force: true });
+    return cy.get(`a[href*="/bepro/account/my-oracles`);
   }
 
   getInputLock() {
@@ -25,6 +25,18 @@ export default class MyAccount extends Page {
     return cy.get("button.btn-primary > span").contains("Approve");
   }
 
+  handleApprove() {
+    cy.get("div.gap-3")
+      .find("button")
+      .then(($buttons) => {
+        if ($buttons.length === 2 && !$buttons[0].disabled) {
+          $buttons[0].click();
+          cy.wait(500);
+          cy.confirmMetamaskPermissionToSpend();
+        }
+      });
+  }
+
   getModalButtonConfirm() {
     return cy.get(".modal-footer > .btn-primary");
   }
@@ -44,4 +56,8 @@ export default class MyAccount extends Page {
   getButtonDelegate() {
     return cy.get(".btn-purple > span").contains("Delegate");
   }
+
+
+
+  
 }

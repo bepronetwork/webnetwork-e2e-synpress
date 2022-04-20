@@ -14,4 +14,18 @@ export default class Page {
   confirmMetamaskTransaction() {
     cy.confirmMetamaskTransaction();
   }
+
+  waitForTransactionSuccess() {
+    cy.waitUntil(
+      () =>
+        cy
+          .contains("Success", {
+            timeout: 60000,
+          })
+          .should("exist"),
+      {
+        timeout: 60000,
+      }
+    );
+  }
 }
