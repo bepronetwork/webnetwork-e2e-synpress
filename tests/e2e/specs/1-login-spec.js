@@ -1,7 +1,6 @@
 import MainNav from "../pages/main-nav/main-nav";
 import MyAccount from "../pages/account/my-account";
-import { faker } from "@faker-js/faker";
-import userData from "../pages/payload/user";
+import { userData, userSessionData } from "../pages/payload/user";
 
 const mainNav = new MainNav();
 const account = new MyAccount();
@@ -19,17 +18,22 @@ describe("Wallet tests", () => {
       userData(metamaskWalletAddress),
     ]).as("userData");
 
+    cy.intercept("GET", "/api/auth/session", userSessionData).as("userSession");
+
     cy.visit("/");
+
+    mainNav.handleConnectBrowserWallet();
+
+    cy.wait(["@userData", "@userSession"]);
   });
 
   context("Connect metamask wallet and account tests", () => {
     it(`should login with success`, () => {
       // TODO add conditional that enables use of metamask when all tests are run
-      mainNav.connectBrowserWallet();
+
       //mainNav.acceptMetamaskAccessRequest();
-      cy.wait("@userData");
+
       //mainNav.waitUntilLoggedIn();
-      cy.wait(500);
       mainNav.getLoggedInWalletAddress().then((stakingWalletAddress) => {
         cy.log(stakingWalletAddress);
         const formattedMetamaskWalletAddress =
@@ -43,11 +47,12 @@ describe("Wallet tests", () => {
     });
 
     it(`should lock $bepro account`, () => {
-      mainNav.getAddressWallet().click();
+      mainNav.getAddressWallet().click({ force: true });
       cy.url().should("contain", "bepro/account");
       account.getOracles().click({ force: true });
       cy.url().should("contain", "bepro/account/my-oracles");
-      account.getInputLock().type(100);
+      account.handleApprove();
+      account.getInputLock().type(26000000);
       account.getButtonLockTransaction().click();
       account.getModalButtonConfirm().click();
       cy.wait(500);
