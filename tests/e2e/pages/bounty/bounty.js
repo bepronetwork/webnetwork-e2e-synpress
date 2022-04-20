@@ -1,15 +1,6 @@
 import Page from "../page";
-import {
-  UserBranchsData,
-  Forksdata,
-  ReposNetworkData,
-  ReposUserData,
-  FirstPrData,
-  StatusPrGithubData,
-  PrCommitsGithubData,
-  FirstProposalData,
-  SecondProposalData,
-} from "../payload/bounty";
+import { FirstPrData } from "../payload/bounty";
+import { interceptGroup } from "../helpers/handleEqualIntercepts";
 
 export class Bounty extends Page {
   getRedeemButton() {
@@ -27,6 +18,10 @@ export class Bounty extends Page {
   }
   getRecognizeAsFinishedButton() {
     return cy.contains("Recognize as finished");
+  }
+
+  getCreateProposalButton() {
+    return cy.contains("Create Proposal");
   }
 }
 
@@ -67,6 +62,7 @@ export function CreatePullRequest() {
   interceptGroup.getIssueCommentsGithub;
   interceptGroup.getGithubCurrentRepos;
   interceptGroup.getPrCount;
+  interceptGroup.getPrGithub;
 
   cy.intercept(
     {
@@ -83,17 +79,6 @@ export function CreatePullRequest() {
       });
     }
   ).as("getIssuePrData");
-
-  cy.intercept(
-    {
-      method: "GET",
-      url: "/repos/bepronetwork/bepro-js-edge/pulls/*",
-      hostname: "api.github.com",
-    },
-    {
-      body: StatusPrGithubData,
-    }
-  ).as("getPrGithub");
 
   bounty.getCreatePullRequestButton().click({ force: true });
   cy.get("h3").contains("Create Pull Request").should("exist");
@@ -111,10 +96,8 @@ export function CreatePullRequest() {
   bounty.waitForTransactionSuccess();
 }
 
-export function recognizeAsFinished() {
-  interceptGroup.getIssueCommentsGithub;
-  interceptGroup.getGithubCurrentRepos;
-
+export function recognizeAsFinished(address) {
+  const bounty = new Bounty();
   cy.intercept(
     {
       method: "GET",
@@ -131,43 +114,12 @@ export function recognizeAsFinished() {
     }
   ).as("getIssuePrData");
 
-  cy.intercept(
-    {
-      method: "GET",
-      url: "/repos/bepronetwork/bepro-js-edge/pulls/*",
-      hostname: "api.github.com",
-    },
-    {
-      body: StatusPrGithubData,
-    }
-  ).as("getPrGithub");
-
-  cy.intercept(
-    {
-      method: "GET",
-      url: "/repos/bepronetwork/bepro-js-edge/pulls/*/commits",
-      hostname: "api.github.com",
-    },
-    {
-      body: [PrCommitsGithubData],
-    }
-  ).as("getParticipants");
-
-  cy.intercept(
-    {
-      method: "GET",
-      url: "/repos/bepronetwork/bepro-js-edge/commits",
-      hostname: "api.github.com",
-    },
-    {
-      body: [PrCommitsGithubData],
-    }
-  ).as("getCommits");
-
-  cy.intercept("POST", "/api/search/users/login", {
-    statusCode: 200,
-    body: [userData(metamaskWalletAddress)],
-  }).as("searchUsers");
+  interceptGroup.getIssueCommentsGithub;
+  interceptGroup.getGithubCurrentRepos;
+  interceptGroup.getPrGithub;
+  interceptGroup.getPrCount;
+  interceptGroup.getParticipants;
+  interceptGroup.searchUsers(address);
 
   bounty.getRecognizeAsFinishedButton().click({ force: true });
   cy.wait(500);
@@ -184,75 +136,22 @@ export function recognizeAsFinished() {
   cy.wait(1000);
 }
 
-const hostGithub = "api.github.com";
+export function RedeemBounty() {
+  const bounty = new Bounty();
 
-const interceptGroup = {
-  getGithubForks: cy
-    .intercept(
-      {
-        method: "GET",
-        url: "/repos/*/*/forks?per_page=100",
-        hostname: hostGithub,
-      },
-      {
-        statusCode: 200,
-        body: Forksdata,
-      }
-    )
-    .as("getGithubForks"),
+  cy.contains("Redeem", {
+    timeout: 60000,
+  });
 
-  getGithubCurrentBranchs: cy
-    .intercept(
-      {
-        method: "GET",
-        url: "/repos/*/*/branches",
-        hostname: hostGithub,
-      },
-      UserBranchsData
-    )
-    .as("getGithubCurrentBranchs"),
-
-  getGithubCurrentRepos: cy
-    .intercept(
-      {
-        method: "GET",
-        url: "/repos/*/*",
-        hostname: hostGithub,
-      },
-      ReposUserData
-    )
-    .as("getGithubCurrentRepos"),
-
-  getIssueCommentsGithub: cy
-    .intercept(
-      {
-        method: "GET",
-        url: "/repos/*/*/issues/*/comments",
-        hostname: hostGithub,
-      },
-      {
-        statusCode: 200,
-        body: [],
-      }
-    )
-    .as("getIssueCommentsGithub"),
-
-  postPullRequest: cy
-    .intercept(
-      {
-        method: "POST",
-        url: "/api/pull-request",
-        times: 2000,
-      },
-      {
-        body: "ok",
-      }
-    )
-    .as("postPullRequest"),
-
-  getPrCount: cy
-    .intercept("GET", "/api/pull-request?*", {
-      count: 1,
-    })
-    .as("getPrCount"),
-};
+  bounty.getRedeemButton().click();
+  cy.wait(1000);
+  cy.isMetamaskWindowActive();
+  cy.wait(1000);
+  cy.confirmMetamaskTransaction({});
+  cy.contains("Redeem", {
+    timeout: 60000,
+  }).should("not.exist");
+  cy.contains("canceled", {
+    timeout: 60000,
+  }).should("exist");
+}
