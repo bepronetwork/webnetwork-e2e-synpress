@@ -14,9 +14,10 @@
     },
     "env": {
       "coverage": false,
-      "delegationAddress": "0x8E3c42FA292a187865b466f05d7EBbFe77f1CF5d"
+      "delegationAddress": "0x7dF9dCE4feA1737D66F10414175608B15a78D719"
     },
     "defaultCommandTimeout": 30000,
     "pageLoadTimeout": 30000,
-    "requestTimeout": 30000
+    "requestTimeout": 30000,
+    "pluginsFile": "tests/e2e/plugins/index.js"
   }
