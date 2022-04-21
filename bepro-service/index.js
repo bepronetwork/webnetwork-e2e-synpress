@@ -1,10 +1,10 @@
 const express = require("express");
 const { Web3Connection, Network } = require("bepro-js");
+require("dotenv").config();
 
 const web3connection = new Web3Connection({
   web3Host: "http://127.0.0.1:8545",
-  privateKey:
-    "0x17c40c097972bd61e1fb43e266ba4c357068cdad1d6987ca9c89c44eb881a778",
+  privateKey: process.env.PRIVATE_KEY,
   skipWindowAssignment: true,
 });
 web3connection.start();
