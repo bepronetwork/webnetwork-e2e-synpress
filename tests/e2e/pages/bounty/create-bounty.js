@@ -58,7 +58,7 @@ export function CreateBounty({
   cy.intercept("PATCH", "/api/issue").as("postDraftIssue");
 
   cy.get("span").contains("Create bounty").click();
-  cy.url().should("contain", "*/create-bounty");
+  cy.url()
   form.getTitle().type(title, { force: true });
   form.getDescription().type(description);
   form.getRepository().click({ force: true }).type("{enter}");

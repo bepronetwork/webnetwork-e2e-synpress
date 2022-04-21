@@ -21,30 +21,18 @@ export class Bounty extends Page {
   }
 
   getCreateProposalButton() {
-    return cy.contains("Create Proposal");
+    return cy.get("button").contains("Create Proposal");
   }
 }
 
 export function StartWorking() {
   const bounty = new Bounty();
 
-  interceptGroup.getGithubForks;
-  interceptGroup.getGithubCurrentBranchs;
-  interceptGroup.getGithubCurrentRepos;
-  interceptGroup.getIssueCommentsGithub;
-
   cy.intercept({
     method: "GET",
     url: "/api/issue/*/*/bepro",
     times: 5000,
   }).as("getIssueData");
-
-  cy.wait([
-    "@getGithubForks",
-    "@getGithubCurrentBranchs",
-    "@getGithubCurrentRepos",
-    "@getIssueCommentsGithub",
-  ]);
 
   bounty.getStartWorkingButton().should("exist").click({ force: true });
 
@@ -58,11 +46,12 @@ export function StartWorking() {
 }
 
 export function CreatePullRequest() {
-  interceptGroup.postPullRequest;
-  interceptGroup.getIssueCommentsGithub;
-  interceptGroup.getGithubCurrentRepos;
-  interceptGroup.getPrCount;
-  interceptGroup.getPrGithub;
+  const bounty = new Bounty();
+  interceptGroup.postPullRequest();
+  interceptGroup.getIssueCommentsGithub();
+  interceptGroup.getGithubCurrentRepos();
+  interceptGroup.getPrCount();
+  interceptGroup.getPrGithub();
 
   cy.intercept(
     {
@@ -114,11 +103,12 @@ export function recognizeAsFinished(address) {
     }
   ).as("getIssuePrData");
 
-  interceptGroup.getIssueCommentsGithub;
-  interceptGroup.getGithubCurrentRepos;
-  interceptGroup.getPrGithub;
-  interceptGroup.getPrCount;
-  interceptGroup.getParticipants;
+  interceptGroup.getIssueCommentsGithub();
+  interceptGroup.getGithubCurrentRepos();
+  interceptGroup.getPrGithub();
+  interceptGroup.getPrCount();
+  interceptGroup.getParticipants();
+  interceptGroup.getCommits();
   interceptGroup.searchUsers(address);
 
   bounty.getRecognizeAsFinishedButton().click({ force: true });
@@ -130,10 +120,10 @@ export function recognizeAsFinished(address) {
     "@getIssuePrData",
     "@getPrGithub",
     "@getPrCount",
+    "@getCommits",
     "@getParticipants",
     "@searchUsers",
   ]);
-  cy.wait(1000);
 }
 
 export function RedeemBounty() {
@@ -148,6 +138,7 @@ export function RedeemBounty() {
   cy.isMetamaskWindowActive();
   cy.wait(1000);
   cy.confirmMetamaskTransaction({});
+
   cy.contains("Redeem", {
     timeout: 60000,
   }).should("not.exist");

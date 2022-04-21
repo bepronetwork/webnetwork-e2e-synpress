@@ -2,25 +2,23 @@ import { CreateBounty } from "../pages/bounty/create-bounty";
 import MainNav from "../pages/main-nav/main-nav";
 import { faker } from "@faker-js/faker";
 import { userData, userSessionData } from "../pages/payload/user";
-import {
-  UserBranchsData,
-  Forksdata,
-  ReposNetworkData,
-  ReposUserData,
-} from "../pages/payload/bounty";
+import { ReposNetworkData } from "../pages/payload/bounty";
 import {
   Bounty,
   StartWorking,
   CreatePullRequest,
   recognizeAsFinished,
-  CreateSimpleProposal,
+  RedeemBounty,
 } from "../pages/bounty/bounty";
-import { Proposal, MergeProposalBounty } from "../pages/bounty/proposal";
+import {
+  MergeProposalBounty,
+  CreateSimpleProposal,
+} from "../pages/bounty/proposal";
+
 import { interceptGroup } from "../pages/helpers/handleEqualIntercepts";
 
 const bounty = new Bounty();
 const navActions = new MainNav();
-const proposal = new Proposal();
 
 let metamaskWalletAddress;
 
@@ -61,12 +59,25 @@ describe("Bounty tests", () => {
   });
 
   it("Should start working bounty", () => {
+    interceptGroup.getGithubForks();
+    interceptGroup.getGithubCurrentBranchs();
+    interceptGroup.getGithubCurrentRepos();
+    interceptGroup.getIssueCommentsGithub();
+
     CreateBounty({
       title: faker.random.words(2),
       description: faker.random.words(2),
       amount: "10",
       increaseTime: 24 * 60 * 61,
     });
+
+    cy.wait([
+      "@getGithubForks",
+      "@getGithubCurrentBranchs",
+      "@getGithubCurrentRepos",
+      "@getIssueCommentsGithub",
+    ]);
+
     StartWorking();
   });
 
@@ -75,15 +86,14 @@ describe("Bounty tests", () => {
   });
 
   it("Should recognize as finished bounty", () => {
-    recognizeAsFinished();
+    recognizeAsFinished(metamaskWalletAddress);
+    cy.wait(2000);
   });
 
   it("Should create proposal bounty", () => {
-    bounty.getCreateProposalButton();
-    CreateSimpleProposal({
-      address: metamaskWalletAddress,
-    });
-    cy.wait(1000);
+    bounty.getCreateProposalButton().click({ force: true });
+    cy.wait(500);
+    CreateSimpleProposal(metamaskWalletAddress);
   });
 
   it("Should merge proposal bounty", () => {
@@ -104,11 +114,23 @@ describe("Bounty tests", () => {
     cy.visit("bepro/create-bounty");
     cy.wait(["@userData", "@userSession"]);
 
+    interceptGroup.getGithubForks();
+    interceptGroup.getGithubCurrentBranchs();
+    interceptGroup.getGithubCurrentRepos();
+    interceptGroup.getIssueCommentsGithub();
+
     CreateBounty({
       title: faker.random.words(6),
       description: faker.random.words(6),
       amount: "10",
     });
+
+    cy.wait([
+      "@getGithubForks",
+      "@getGithubCurrentBranchs",
+      "@getGithubCurrentRepos",
+      "@getIssueCommentsGithub",
+    ]);
 
     RedeemBounty();
   });

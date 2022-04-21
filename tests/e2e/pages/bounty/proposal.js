@@ -1,5 +1,7 @@
 import Page from "../page";
 import { interceptGroup } from "../helpers/handleEqualIntercepts";
+import { Bounty } from "./bounty";
+import { FirstProposalData, FirstPrData } from "../payload/bounty";
 
 export class Proposal extends Page {
   getReadyToMergePr() {
@@ -13,7 +15,7 @@ export class Proposal extends Page {
   }
 }
 
-export function CreateSimpleProposal({ address }) {
+export function CreateSimpleProposal(address) {
   const proposal = new Proposal();
 
   cy.intercept(
@@ -45,11 +47,10 @@ export function CreateSimpleProposal({ address }) {
     }
   ).as("getIssuePrData");
 
-  interceptGroup.getPrGithub;
-  interceptGroup.getParticipants;
-  interceptGroup.getIssueCommentsGithub;
-  interceptGroup.getGithubCurrentRepos;
-  interceptGroup.getCommits;
+  interceptGroup.getPrGithub();
+  interceptGroup.getParticipants();
+  interceptGroup.getIssueCommentsGithub();
+  interceptGroup.getGithubCurrentRepos();
   interceptGroup.searchUsers(address);
 
   cy.intercept("POST", "/api/past-events/merge-proposal", {
@@ -79,6 +80,7 @@ export function CreateSimpleProposal({ address }) {
 }
 
 export function MergeProposalBounty(address) {
+  const bounty = new Bounty();
   interceptGroup.getAddress(address);
 
   cy.intercept("POST", "/api/pull-request/merge", {
