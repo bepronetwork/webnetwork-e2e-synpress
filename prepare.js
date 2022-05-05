@@ -1,39 +1,25 @@
 const fs = require("fs");
 const keys = require("./keys.json");
-
-const pathKeys = "SYNPRESS_PRIVATEKEY";
-const pathEnv = ".env";
+const path = require("node:path");
 
 const address = Object.values(keys.private_keys)[0];
 
 const main = () => {
-  fs.readdirSync(__dirname).forEach((file) => {
-    if (file === "SYNPRESS_PRIVATEKEY") {
-      fs.unlink(pathKeys, (err) => {
-        if (err) {
-          console.error(err);
-          return;
-        }
-        //file removed
-      });
-    }
-    if (file === ".env") {
-      fs.unlink(pathEnv, (err) => {
-        if (err) {
-          console.error(err);
-          return;
-        }
-        //file removed
-      });
-    }
-  });
+  if (fs.readFileSync(path.resolve(__dirname, "SYNPRESS_PRIVATEKEY")))
+    fs.unlinkSync(path.resolve(__dirname, "SYNPRESS_PRIVATEKEY"));
+  fs.writeFileSync(
+    path.resolve(__dirname, "SYNPRESS_PRIVATEKEY"),
+    address,
+    "utf-8"
+  );
 
-  fs.writeFile("SYNPRESS_PRIVATEKEY", address, { flag: "a+" }, (err) => {
-    if (err) console.log("err writeFile -> ", err);
-  });
-  fs.writeFile(".env", `PRIVATE_KEY=${address}`, { flag: "a+" }, (err) => {
-    if (err) console.log("err writeFile -> ", err);
-  });
+  if (fs.readFileSync(path.resolve(__dirname, ".env")))
+    fs.unlinkSync(path.resolve(__dirname, ".env"));
+  fs.writeFileSync(
+    path.resolve(__dirname, ".env"),
+    `PRIVATE_KEY=${address}`,
+    "utf-8"
+  );
 };
 
 main();
