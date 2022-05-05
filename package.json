@@ -14,12 +14,9 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@faker-js/faker": "*",
+    "@faker-js/faker": "^6.3.1",
     "@synthetixio/synpress": "^1.1.1",
-    "bepro-js": "github:moshmage/bepro-js#2.0.0-alpha.1"
-  },
-  "browser": {
-    "bepro-js": "./node_modules/bepro-js/dist/index.js"
+    "@taikai/dappkit": "^2.0.0-alpha.4"
   },
   "dependencies": {
     "dotenv": "^16.0.0",
