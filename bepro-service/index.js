@@ -1,5 +1,5 @@
 const express = require("express");
-const { Web3Connection, Network } = require("bepro-js");
+const { Web3Connection } = require("@taikai/dappkit");
 require("dotenv").config();
 
 const web3connection = new Web3Connection({
@@ -25,11 +25,8 @@ async function increaseTime(time, web3) {
   const mine = payload(`evm_mine`, []);
   const provider = web3.currentProvider;
 
-  console.log("increaseTime 1 -");
-
   return new Promise((resolve, reject) => {
     provider.send(timeAdvance, (err) => {
-      console.log("increaseTime 2 -", err);
       if (err) reject(err);
       else
         provider.send(mine, (err, resp) => {
@@ -42,9 +39,11 @@ async function increaseTime(time, web3) {
 
 app.post("/increaseTime", async (req, res) => {
   const { time } = req.body;
-  await increaseTime(time, web3connection.Web3).then(() =>
-    res.send("time advanced successfully ")
-  );
+  await increaseTime(time, web3connection.Web3)
+    .then(() => res.send("OK"))
+    .catch(() => {
+      res.send("NOK");
+    });
 });
 
 app.listen(port, () => {
