@@ -1,0 +1,28 @@
+{
+  "name": "get-start-synpress",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "engines": {
+    "node": "16.0.0"
+  },
+  "scripts": {
+    "test:e2e": "synpress run --configFile tests/e2e/config.json",
+    "open:e2e": "synpress open --configFile tests/e2e/config.json",
+    "beproService": "node bepro-service/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@faker-js/faker": "^6.3.1",
+    "@synthetixio/synpress": "^1.1.1",
+    "@taikai/dappkit": "^2.0.0-alpha.4"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "electron": "^17.2.0",
+    "express": "^4.17.3",
+    "fs": "^0.0.1-security",
+    "graceful-fs": "^4.2.9"
+  }
+}
