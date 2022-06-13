@@ -1,5 +1,4 @@
 import Page from "../page";
-import { BranchsData } from "../payload/bounty";
 
 export class FormBounty extends Page {
   getTitle() {
@@ -15,11 +14,15 @@ export class FormBounty extends Page {
   }
 
   getBranch() {
+    return cy.get(".col:nth-child(2) > div");
+  }
+
+  getToken() {
     return cy.get(".react-select__input").last();
   }
 
   getAmount() {
-    return cy.get("input.text-muted");
+    return cy.get(`input[inputmode="numeric"]`);
   }
 
   getButtonCreate() {
@@ -51,22 +54,19 @@ export function CreateBounty({
 }) {
   const form = new FormBounty();
 
-  cy.intercept("GET", "/api/repos/branchs/*/bepro", BranchsData).as(
-    "getBranchs"
-  );
-
-  cy.intercept("PATCH", "/api/issue").as("postDraftIssue");
+  cy.intercept("POST", "/api/past-events/bounty/created").as("created");
 
   cy.get("span").contains("Create bounty").click();
-  cy.url()
+  cy.url();
   form.getTitle().type(title, { force: true });
   form.getDescription().type(description);
   form.getRepository().click({ force: true }).type("{enter}");
-  cy.wait("@getBranchs");
+  cy.wait("@gqlBranchesQuery")
   form.getBranch().click({ force: true }).type("{enter}");
+  form.getToken().click({ force: true }).type("{enter}");
+  form.getAmount().type(amount);
   cy.wait(500);
   form.handleApprove();
-  form.getAmount().type(amount);
   form.getButtonCreate().should("not.be.disabled").click();
   cy.intercept("POST", "/api/issue");
   cy.wait(500);
@@ -77,7 +77,7 @@ export function CreateBounty({
       });
     }
   });
-  cy.wait("@postDraftIssue", {
+  cy.wait("@created", {
     timeout: 100000,
   });
 }

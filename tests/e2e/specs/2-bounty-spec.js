@@ -41,7 +41,11 @@ describe("Bounty tests", () => {
       userData(metamaskWalletAddress),
     ]).as("userData");
 
-    cy.intercept("GET", "/api/auth/session", userSessionData).as("userSession");
+    cy.intercept(
+      "GET",
+      "/api/auth/session",
+      userSessionData(Cypress.env("acessToken"))
+    ).as("userSession");
 
     cy.intercept({
       method: "GET",
@@ -51,18 +55,25 @@ describe("Bounty tests", () => {
 
     cy.visit("/");
 
-    cy.wait(["@getRepos", "@getApi"]);
+    cy.wait(["@getRepos", "@getApi", "@userSession"]);
 
-    navActions.handleConnectBrowserWallet();
+    cy.isMetamaskWindowActive().then((active) => {
+      if (active === true) {
+        cy.acceptMetamaskAccess();
+      }
+    });
 
-    cy.wait(["@userData", "@userSession"]);
+    cy.wait(["@userData"]);
   });
 
   it("Should start working bounty", () => {
-    interceptGroup.getGithubForks();
-    interceptGroup.getGithubCurrentBranchs();
-    interceptGroup.getGithubCurrentRepos();
-    interceptGroup.getIssueCommentsGithub();
+
+    cy.intercept("POST", "https://api.github.com/graphql", (req) => {
+      interceptGroup.gqlBranchesQuery(req);
+      interceptGroup.gqlForksQuery(req);
+      interceptGroup.gqlCommentsQuery(req);
+      interceptGroup.gqlRepositoriesQuery(req);
+    });
 
     CreateBounty({
       title: faker.random.words(2),
@@ -72,52 +83,96 @@ describe("Bounty tests", () => {
     });
 
     cy.wait([
-      "@getGithubForks",
-      "@getGithubCurrentBranchs",
-      "@getGithubCurrentRepos",
-      "@getIssueCommentsGithub",
+      "@gqlBranchesQuery",
+      "@gqlForksQuery",
+      "@gqlCommentsQuery",
+      "@gqlRepositoriesQuery",
     ]);
+
+    cy.reload();
 
     StartWorking();
   });
 
   it("Should create pull request bounty", () => {
+    cy.intercept("POST", "https://api.github.com/graphql", (req) => {
+      interceptGroup.gqlBranchesQuery(req);
+      interceptGroup.gqlRepositoriesQuery(req);
+      interceptGroup.gqlDetailsQuery(req);
+    });
     CreatePullRequest();
   });
 
   it("Should recognize as finished bounty", () => {
+    cy.intercept("POST", "https://api.github.com/graphql", (req) => {
+      interceptGroup.gqlCommentsQuery(req);
+      interceptGroup.gqlRepositoriesQuery(req);
+      interceptGroup.gqlDetailsQuery(req);
+      interceptGroup.gqlLinesOfCodeQuery(req);
+      interceptGroup.gqlParticipantsQuery(req);
+    });
     recognizeAsFinished(metamaskWalletAddress);
-    cy.wait(2000);
+    cy.wait([
+      "@gqlParticipantsQuery",
+      "@gqlLinesOfCodeQuery",
+      "@gqlRepositoriesQuery",
+    ]);
   });
 
   it("Should create proposal bounty", () => {
-    bounty.getCreateProposalButton().click({ force: true });
+    cy.intercept("POST", "https://api.github.com/graphql", (req) => {
+      interceptGroup.gqlParticipantsQuery(req);
+      interceptGroup.gqlCommentsQuery(req);
+      interceptGroup.gqlRepositoriesQuery(req);
+      interceptGroup.gqlDetailsQuery(req);
+      interceptGroup.gqlLinesOfCodeQuery(req);
+    });
     cy.wait(500);
+    cy.contains("Create Proposal").should("exist");
+    bounty.getCreateProposalButton().click({ force: true });
+    cy.wait("@gqlParticipantsQuery");
     CreateSimpleProposal(metamaskWalletAddress);
   });
 
   it("Should merge proposal bounty", () => {
+    /*cy.intercept("POST", "https://api.github.com/graphql", (req) => {
+      interceptGroup.gqlBranchesQuery(req);
+      interceptGroup.gqlForksQuery(req);
+      interceptGroup.gqlCommentsQuery(req);
+      interceptGroup.gqlRepositoriesQuery(req);
+      interceptGroup.gqlDetailsQuery(req);
+      interceptGroup.gqlLinesOfCodeQuery(req);
+      interceptGroup.gqlParticipantsQuery(req);
+    });*/
+    interceptGroup.getAddress(metamaskWalletAddress);
     cy.get("span").contains("1 proposal").click({ force: true });
     cy.get(".content-wrapper > .cursor-pointer:nth-child(1)").click({
       force: true,
     });
-    MergeProposalBounty(metamaskWalletAddress);
+    cy.wait("@getAddress");
+    MergeProposalBounty();
   });
 
   it("Should Redeem bounty", () => {
+    cy.intercept("POST", "https://api.github.com/graphql", (req) => {
+      interceptGroup.gqlBranchesQuery(req);
+      interceptGroup.gqlForksQuery(req);
+      interceptGroup.gqlCommentsQuery(req);
+      interceptGroup.gqlRepositoriesQuery(req);
+    });
+
     cy.intercept("POST", "/api/search/users/address", [
       userData(metamaskWalletAddress),
     ]).as("userData");
 
-    cy.intercept("GET", "/api/auth/session", userSessionData).as("userSession");
+    cy.intercept(
+      "GET",
+      "/api/auth/session",
+      userSessionData(Cypress.env("acessToken"))
+    ).as("userSession");
 
     cy.visit("bepro/create-bounty");
     cy.wait(["@userData", "@userSession"]);
-
-    interceptGroup.getGithubForks();
-    interceptGroup.getGithubCurrentBranchs();
-    interceptGroup.getGithubCurrentRepos();
-    interceptGroup.getIssueCommentsGithub();
 
     CreateBounty({
       title: faker.random.words(6),
@@ -126,10 +181,10 @@ describe("Bounty tests", () => {
     });
 
     cy.wait([
-      "@getGithubForks",
-      "@getGithubCurrentBranchs",
-      "@getGithubCurrentRepos",
-      "@getIssueCommentsGithub",
+      "@gqlBranchesQuery",
+      "@gqlForksQuery",
+      "@gqlCommentsQuery",
+      "@gqlRepositoriesQuery",
     ]);
 
     RedeemBounty();
