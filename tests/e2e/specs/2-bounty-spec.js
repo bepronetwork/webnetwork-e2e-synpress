@@ -9,6 +9,7 @@ import {
   CreatePullRequest,
   recognizeAsFinished,
   RedeemBounty,
+  updateAmount,
 } from "../pages/bounty/bounty";
 import {
   MergeProposalBounty,
@@ -63,11 +64,9 @@ describe("Bounty tests", () => {
         cy.wait(["@userData"]);
       }
     });
-
   });
 
   it("Should start working bounty", () => {
-
     cy.intercept("POST", "https://api.github.com/graphql", (req) => {
       interceptGroup.gqlBranchesQuery(req);
       interceptGroup.gqlForksQuery(req);
@@ -152,7 +151,7 @@ describe("Bounty tests", () => {
     MergeProposalBounty();
   });
 
-  it("Should Redeem bounty", () => {
+  it("Should Update amount bounty", () => {
     cy.intercept("POST", "https://api.github.com/graphql", (req) => {
       interceptGroup.gqlBranchesQuery(req);
       interceptGroup.gqlForksQuery(req);
@@ -186,6 +185,10 @@ describe("Bounty tests", () => {
       "@gqlRepositoriesQuery",
     ]);
 
+    updateAmount(20);
+  });
+
+  it("Should Redeem bounty", () => {
     RedeemBounty();
   });
 });

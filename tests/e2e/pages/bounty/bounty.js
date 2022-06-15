@@ -34,6 +34,18 @@ export class Bounty extends Page {
   getBackPullRequest() {
     return cy.get("svg.rounded-circle").click({ force: true });
   }
+  getUpdateAmountButton() {
+    return cy.get("button").contains("Update Amount");
+  }
+  getInputModalAmount() {
+    return cy.get("div > label").contains("Amount").next();
+  }
+  getConfirmModalButton() {
+    return cy.get("button > span").contains("Confirm");
+  }
+  getCancelModalButton() {
+    return cy.get("button").contains("Cancel");
+  }
 }
 
 export function StartWorking() {
@@ -140,13 +152,9 @@ export function recognizeAsFinished(address) {
   cy.intercept("POST", "/api/past-events/pull-request/ready", {
     body: ["1181"],
   });
-  cy.wait([
-    "@gqlCommentsQuery",
-    "@gqlDetailsQuery",
-    "@getIssuePrData2",
-  ]);
-  bounty.getBackPullRequest()
-  cy.wait("@searchUsers")
+  cy.wait(["@gqlCommentsQuery", "@gqlDetailsQuery", "@getIssuePrData2"]);
+  bounty.getBackPullRequest();
+  cy.wait("@searchUsers");
 }
 
 export function RedeemBounty() {
@@ -167,4 +175,41 @@ export function RedeemBounty() {
   cy.contains("canceled", {
     timeout: 60000,
   }).should("exist");
+}
+
+export function updateAmount(amount) {
+  const bounty = new Bounty();
+
+  cy.intercept(
+    {
+      method: "GET",
+      url: "/api/issue/*/*/bepro",
+      times: 5000,
+    },
+    ({ reply, headers }) => {
+      delete headers["if-none-match"]; // prevent caching
+      reply(({ body }) => {
+        body.amount = amount;
+        return body;
+      });
+    }
+  ).as("getIssue");
+
+  cy.intercept("/api/past-events/bounty/updated", ["1/1"]).as("bountyUpdated");
+
+  cy.contains("Update Amount").should("exist");
+  bounty.getUpdateAmountButton().click();
+  cy.wait(500);
+  cy.contains("Update Bounty Amount").should("exist");
+  bounty.getInputModalAmount().type(amount);
+  cy.wait(500);
+  cy.get("button > span").contains("Approve").click({ force: true });
+  cy.wait(500);
+  cy.confirmMetamaskPermissionToSpend();
+  cy.contains("Confirm")
+  bounty.getConfirmModalButton().click({ force: true });
+  cy.wait(500);
+  cy.confirmMetamaskTransaction({});
+  cy.wait(["@bountyUpdated", "@getIssue"]);
+  cy.get("div .price-conversor > span").contains(amount);
 }
