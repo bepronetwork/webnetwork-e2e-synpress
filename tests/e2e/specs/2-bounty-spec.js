@@ -60,10 +60,10 @@ describe("Bounty tests", () => {
     cy.isMetamaskWindowActive().then((active) => {
       if (active === true) {
         cy.acceptMetamaskAccess();
+        cy.wait(["@userData"]);
       }
     });
 
-    cy.wait(["@userData"]);
   });
 
   it("Should start working bounty", () => {
@@ -130,7 +130,6 @@ describe("Bounty tests", () => {
     cy.wait(500);
     cy.contains("Create Proposal").should("exist");
     bounty.getCreateProposalButton().click({ force: true });
-    cy.wait("@gqlParticipantsQuery");
     CreateSimpleProposal(metamaskWalletAddress);
   });
 

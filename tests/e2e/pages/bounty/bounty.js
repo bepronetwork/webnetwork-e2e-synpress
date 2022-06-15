@@ -83,9 +83,6 @@ export function CreatePullRequest() {
   cy.get("span").contains("Create Pull Request").click({ force: true });
   cy.wait(500);
 
-  cy.intercept("POST", "/api/pull-request/", (req) => {
-    req.redirect("/api/pull-request", 200);
-  });
   cy.intercept("POST", "/api/pull-request", {
     body: ResponsePrData,
   });
@@ -147,7 +144,6 @@ export function recognizeAsFinished(address) {
     "@gqlCommentsQuery",
     "@gqlDetailsQuery",
     "@getIssuePrData2",
-    "@searchUsers",
   ]);
   bounty.getBackPullRequest()
   cy.wait("@searchUsers")

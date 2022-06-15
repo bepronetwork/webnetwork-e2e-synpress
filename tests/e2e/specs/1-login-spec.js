@@ -64,11 +64,13 @@ describe("Wallet tests", () => {
       account.getOracles().click({ force: true });
       cy.url().should("contain", "bepro/account/my-oracles");
       cy.wait(500);
-      account.getInputLock().type(150, { force: true });
+      account.getInputLock().type(Cypress.env("councilMemberValue"), { force: true });
       cy.wait(500);
       account.handleApprove();
+      cy.wait(500)
       account.getButtonLockTransaction().click({ force: true });
-      account.getModalButtonConfirm().click({ force: true });
+      cy.wait(500)
+      account.getModalButtonConfirm().click();
       cy.wait(500);
       account.confirmMetamaskTransaction();
       mainNav.waitForTransactionSuccess();
@@ -78,7 +80,8 @@ describe("Wallet tests", () => {
       account.getButtonUnlock().click({ force: true });
       account.getInputUnlock().clear({ force: true }).type(100);
       account.getButtonUnlockTransaction().click({ force: true });
-      account.getModalButtonConfirm().click({ force: true });
+      cy.wait(500);
+      account.getModalButtonConfirm().click();
       cy.wait(500);
       account.confirmMetamaskTransaction();
       mainNav.waitForTransactionSuccess();
