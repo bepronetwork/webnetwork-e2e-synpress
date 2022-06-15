@@ -15,7 +15,8 @@
     "env": {
       "coverage": false,
       "delegationAddress": "0x7dF9dCE4feA1737D66F10414175608B15a78D719",
-      "acessToken": "needValidToken"
+      "acessToken": "needValidToken",
+      "councilMemberValue": 26000000
     },
     "defaultCommandTimeout": 30000,
     "pageLoadTimeout": 30000,
