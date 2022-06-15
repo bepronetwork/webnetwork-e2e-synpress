@@ -14,7 +14,7 @@ export class FormBounty extends Page {
   }
 
   getBranch() {
-    return cy.get(".col:nth-child(2) > div");
+    return cy.get("div > label").contains("Select a branch").next()
   }
 
   getToken() {
@@ -61,7 +61,7 @@ export function CreateBounty({
   form.getTitle().type(title, { force: true });
   form.getDescription().type(description);
   form.getRepository().click({ force: true }).type("{enter}");
-  cy.wait("@gqlBranchesQuery")
+  cy.wait("@gqlBranchesQuery");
   form.getBranch().click({ force: true }).type("{enter}");
   form.getToken().click({ force: true }).type("{enter}");
   form.getAmount().type(amount);
