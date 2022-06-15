@@ -3,13 +3,11 @@ const { Web3Connection } = require("@taikai/dappkit");
 require("dotenv").config();
 
 async function defaultWeb3Connection(start = false) {
-  const web3Connection = new Web3Connection(
-    (options = {
-      web3Host: process.env.HOSTCHAIN,
-      privateKey: process.env.PRIVATE_KEY,
-      skipWindowAssignment: true,
-    })
-  );
+  const web3Connection = new Web3Connection({
+    web3Host: process.env.HOSTCHAIN,
+    privateKey: process.env.PRIVATE_KEY,
+    skipWindowAssignment: true,
+  });
   if (start) await web3Connection.start();
 
   return web3Connection;
