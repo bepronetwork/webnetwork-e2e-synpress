@@ -1,38 +1,39 @@
-const Forksdata = [
-  {
-    id: 451920531,
-    name: "bepro-js-edge",
-    full_name: "luisclark/bepro-js-edge",
-    owner: {
-      login: "luisclark",
-      id: 92887398,
-      avatar_url: "https://avatars.githubusercontent.com/u/92887398?v=4",
-      url: "https://api.github.com/users/luisclark",
-      type: "User",
+const Forksdata = {
+  repository: {
+    forks: {
+      pageInfo: {
+        endCursor: "Y3Vyc29yOnYyOpHOHRNkNw==",
+        hasNextPage: false,
+      },
+      nodes: [
+        {
+          owner: {
+            login: "user-1",
+          },
+        },
+        {
+          owner: {
+            login: "user-2",
+          },
+        },
+        {
+          owner: {
+            login: "user-test",
+          },
+        },
+      ],
     },
-    url: "https://api.github.com/repos/luisclark/bepro-js-edge",
   },
-];
+};
 
-const UserBranchsData = [
-  {
-    name: "main",
+const UserBranchsData = {
+  repository: {
+    refs: {
+      nodes: [{ name: "main" }, { name: "master" }],
+      pageInfo: { endCursor: "Nw", hasNextPage: false },
+    },
   },
-  {
-    name: "master",
-  },
-];
-
-const BranchsData = [
-  {
-    branch: "main",
-    protected: false,
-  },
-  {
-    branch: "master",
-    protected: false,
-  },
-];
+};
 
 const ReposNetworkData = [
   {
@@ -42,11 +43,14 @@ const ReposNetworkData = [
   },
 ];
 
-const ReposUserData = {
-  owner: {
-    login: "user-test",
-  },
-  fork: true,
+const ResponsePrData = {
+  bountyId: 30,
+  originRepo: "bepronetwork/bepro-js-edge",
+  originBranch: "bounty_1-414",
+  originCID: "1/1539",
+  userRepo: "user-test/bepro-js-edge",
+  userBranch: "user-test:feature/test6",
+  cid: "1540",
 };
 
 const FirstPrData = (issueId, createdAt) => ({
@@ -58,20 +62,28 @@ const FirstPrData = (issueId, createdAt) => ({
   issueId,
   reviewers: [],
   updatedAt: "2022-03-30T14:02:57.131Z",
+  contractId: 0,
+  branch: "user-test:feature/test7",
+  status: "draft",
+  userBranch: "user-test:feature/test7",
+  userRepo: "user-test/bepro-js-edge",
 });
 
-const StatusPrGithubData = {
-  state: "open",
-  mergeable: true,
-  mergeable_state: "dirty",
-  merged: false,
-};
-
-const PrCommitsGithubData = {
-  author: {
-    login: "user-test",
-  },
-};
+const SecondPrData = (issueId, createdAt) => ({
+  branch: "bounty_46",
+  createdAt,
+  githubId: "1181",
+  githubLogin: "user-test",
+  id: 3,
+  issueId,
+  reviewers: [],
+  updatedAt: "2022-03-30T14:02:57.131Z",
+  contractId: 0,
+  branch: "user-test:feature/test7",
+  status: "ready",
+  userBranch: "user-test:feature/test7",
+  userRepo: "user-test/bepro-js-edge",
+});
 
 const FirstProposalData = (issueId, createdAt) => ({
   createdAt,
@@ -81,27 +93,27 @@ const FirstProposalData = (issueId, createdAt) => ({
   pullRequestId: 3,
   scMergeId: "0",
   updatedAt: "2022-03-31T16:07:41.687Z",
+  contractId: 0,
 });
 
 const SecondProposalData = (issueId, createdAt) => ({
-    createdAt,
-    githubLogin: "user-test2",
-    id: 2,
-    issueId,
-    pullRequestId: 50,
-    scMergeId: "0",
-    updatedAt: "2022-03-31T16:07:41.687Z",
-  });
+  createdAt,
+  githubLogin: "user-test2",
+  id: 2,
+  issueId,
+  pullRequestId: 50,
+  scMergeId: "0",
+  updatedAt: "2022-03-31T16:07:41.687Z",
+  contractId: 0,
+});
 
 export {
   Forksdata,
-  BranchsData,
   UserBranchsData,
   ReposNetworkData,
-  ReposUserData,
   FirstPrData,
-  StatusPrGithubData,
-  PrCommitsGithubData,
+  SecondPrData,
   FirstProposalData,
-  SecondProposalData
+  SecondProposalData,
+  ResponsePrData,
 };

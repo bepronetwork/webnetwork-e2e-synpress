@@ -38,7 +38,7 @@ export default class MyAccount extends Page {
   }
 
   getModalButtonConfirm() {
-    return cy.get(".modal-footer > .btn-primary");
+    return cy.get("button").contains("Confirm");
   }
 
   getButtonUnlock() {

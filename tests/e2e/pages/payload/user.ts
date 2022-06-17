@@ -20,15 +20,17 @@ function userData(
   };
 }
 
-const userSessionData = {
-  expires: faker.date.future(1),
-  user: {
-    name: githubHandle,
-    email: null,
-    image: "https://avatars.githubusercontent.com/u/34746557?v=4",
-    login: githubLogin,
-    accessToken,
-  },
+const userSessionData = (accessToken) => {
+  return {
+    expires: faker.date.future(1),
+    user: {
+      name: githubHandle,
+      email: faker.internet.email(),
+      image: "https://avatars.githubusercontent.com/u/34746557?v=4",
+      login: githubLogin,
+      accessToken: accessToken,
+    },
+  };
 };
 
 export { userData, userSessionData };

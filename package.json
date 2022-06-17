@@ -18,6 +18,9 @@
     "@synthetixio/synpress": "^1.1.1",
     "@taikai/dappkit": "^2.0.0-alpha.4"
   },
+  "browser": {
+    "dappkit": "./node_modules/@taikai/dappkit/dist/index.js"
+  },
   "dependencies": {
     "dotenv": "^16.0.0",
     "electron": "^17.2.0",

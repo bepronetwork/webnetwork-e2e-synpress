@@ -5,7 +5,7 @@
 ### First we need to create a file called "SYNPRESS_PRIVATEKEY" and place the test wallet's private key. This is because the synpress lib doesn't recognize the .env
 
 ### Now we need to start the BeproService, to use some ganache services
-### For this we will add the private_key and hostname to the .env and start the server with the command:
+### For this we will add the private_key and hostchain to the .env and start the server with the command:
 ```
 npm run beproService
 ``` 
